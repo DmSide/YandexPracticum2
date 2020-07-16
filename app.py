@@ -37,7 +37,7 @@ def movie_list():
                 "fields": ["title"]
             }
         }
-    } if defaults.get('search', False) else {}
+    } if defaults.get('search') else {}
 
     body['_source'] = dict()
     body['_source']['include'] = ['id', 'title', 'imdb_rating']
