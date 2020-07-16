@@ -35,11 +35,9 @@ def movie_list():
     params = {
         'from': data['limit'] * (data['page'] - 1),
         'size': data['limit'],
-        'sort': [
-            {
-                data["sort"]: data["sort_order"]
-            }
-        ]
+        'sort': [{
+            data["sort"]: data["sort_order"]
+        }]
     }
 
     with ES.Elasticsearch(settings.ELASTIC_SETTINGS) as es_client:
