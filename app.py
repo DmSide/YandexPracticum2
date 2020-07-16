@@ -72,7 +72,10 @@ def movie_list():
 
 @app.route('/api/movies/<string:movie_id>')
 def get_movie(movie_id):
-    es_client = ES.Elasticsearch([{'host': '', 'port': }], )
+    es_client = ES.Elasticsearch([{
+        'host': settings.ELASTICSEARCH_HOST,
+        'port': settings.ELASTICSEARCH_PORT
+    }])
 
     if not es_client.ping():
         print('oh(')
