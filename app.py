@@ -1,5 +1,6 @@
 from flask import Flask, abort, request, jsonify
 import elasticsearch as ES
+import settings
 
 from validate import validate_args
 
@@ -53,7 +54,11 @@ def movie_list():
         ]
     }
 
-    es_client = ES.Elasticsearch([{'host': '192.168.11.128', 'port': 9200}], )
+    es_client = ES.Elasticsearch([{
+        'host': settings.ELASTICSEARCH_HOST,
+        'port': settings.ELASTICSEARCH_PORT
+    }])
+
     search_res = es_client.search(
         body=body,
         index='movies',
@@ -67,7 +72,7 @@ def movie_list():
 
 @app.route('/api/movies/<string:movie_id>')
 def get_movie(movie_id):
-    es_client = ES.Elasticsearch([{'host': '192.168.11.128', 'port': 9200}], )
+    es_client = ES.Elasticsearch([{'host': '', 'port': }], )
 
     if not es_client.ping():
         print('oh(')
@@ -80,6 +85,7 @@ def get_movie(movie_id):
         return jsonify(search_result['_source'])
 
     return abort(404)
+
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=80)
