@@ -1,13 +1,26 @@
 def validate_args(args):
+    defaults = {
+        'limit': 50,
+        'page': 1,
+        'sort': 'id',
+        'sort_order': 'asc'
+    }
+
     try:
-        limit = int(args.get("limit", 50))
-        page = int(args.get("page", 1))
-        sort = str(args.get("sort", "id"))
-        sort_order = str(args.get("sort_order", "asc"))
+        data = {
+            'limit': int(args.get("limit", defaults["limit"])),
+            'page': int(args.get("page", defaults["page"])),
+            'sort': str(args.get("sort", defaults["sort"])),
+            'sort_order': str(args.get("sort_order", defaults["sort_order"]))
+        }
+
+        success = data["limit"] >= 0 and data["page"] > 0 and data["sort_order"] in ["asc", "desc"] and data["sort"] in ['id', 'title', 'imdb_rating']
         return {
-            "success": limit >= 0 and page > 0 and sort_order in ["asc", "desc"] and sort in ["id"]
+            "success": success,
+            "data": data
         }
     except Exception:
         return {
-            "success": False
+            "success": False,
+            "data": None
         }

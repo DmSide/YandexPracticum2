@@ -19,36 +19,29 @@ def movie_list():
     if not validate['success']:
         return abort(422)
 
-    defaults = {
-        'limit': 50,
-        'page': 1,
-        'sort': 'id',
-        'sort_order': 'asc'
-    }
-
     # Тут уже валидно все
-    defaults.update(dict(request.args))
+    data = validate['data']
 
     # Уходит в тело запроса. Если запрос не пустой - мультисерч, если пустой - выдает все фильмы
     body = {
         "query": {
             "multi_match": {
-                "query": defaults['search'],
+                "query": data['search'],
                 "fields": ["title"]
             }
         }
-    } if defaults.get('search') else {}
+    } if data.get('search') else {}
 
     body['_source'] = dict()
     body['_source']['include'] = ['id', 'title', 'imdb_rating']
 
     params = {
         # '_source': ['id', 'title', 'imdb_rating'],
-        'from': int(defaults['limit']) * (int(defaults['page']) - 1),
-        'size': defaults['limit'],
+        'from': data['limit'] * (data['page'] - 1),
+        'size': data['limit'],
         'sort': [
             {
-                defaults["sort"]: defaults["sort_order"]
+                data["sort"]: data["sort_order"]
             }
         ]
     }
