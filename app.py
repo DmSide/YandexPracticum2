@@ -27,8 +27,7 @@ def movie_list():
     }
 
     # Тут уже валидно все
-    for param in request.args.keys():
-        defaults[param] = request.args.get(param)
+    defaults.update(dict(request.args))
 
     # Уходит в тело запроса. Если запрос не пустой - мультисерч, если пустой - выдает все фильмы
     body = {
