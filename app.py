@@ -32,9 +32,6 @@ def movie_list():
         }
     } if data.get('search') else {}
 
-    body['_source'] = dict()
-    body['_source']['include'] = ['id', 'title', 'imdb_rating']
-
     params = {
         'from': data['limit'] * (data['page'] - 1),
         'size': data['limit'],
