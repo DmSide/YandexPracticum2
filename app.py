@@ -45,15 +45,11 @@ def movie_list():
         ]
     }
 
-    with ES.Elasticsearch([{
-        'host': settings.ELASTICSEARCH_HOST,
-        'port': settings.ELASTICSEARCH_PORT
-    }]) as es_client:
-
+    with ES.Elasticsearch(settings.ELASTIC_SETTINGS) as es_client:
         try:
             search_res = es_client.search(
                 body=body,
-                index='movies',
+                index=settings.ELASTIC_INDEX,
                 params=params,
                 filter_path=['hits.hits._source']
             )
@@ -68,11 +64,7 @@ def movie_list():
 
 @app.route('/api/movies/<string:movie_id>')
 def get_movie(movie_id):
-    with ES.Elasticsearch([{
-        'host': settings.ELASTICSEARCH_HOST,
-        'port': settings.ELASTICSEARCH_PORT
-    }]) as es_client:
-
+    with ES.Elasticsearch(settings.ELASTIC_SETTINGS) as es_client:
         try:
             search_result = es_client.get(index='movies', id=movie_id, ignore=404)
             if search_result['found']:
