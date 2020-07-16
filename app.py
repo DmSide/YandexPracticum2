@@ -66,7 +66,10 @@ def movie_list():
     )
     es_client.close()
 
-    return jsonify([doc['_source'] for doc in search_res['hits']['hits']])
+    if search_res:
+        return jsonify([doc['_source'] for doc in search_res['hits']['hits']])
+
+    return jsonify({})
 
 
 @app.route('/api/movies/<string:movie_id>')
