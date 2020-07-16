@@ -36,7 +36,6 @@ def movie_list():
     body['_source']['include'] = ['id', 'title', 'imdb_rating']
 
     params = {
-        # '_source': ['id', 'title', 'imdb_rating'],
         'from': data['limit'] * (data['page'] - 1),
         'size': data['limit'],
         'sort': [
@@ -46,41 +45,40 @@ def movie_list():
         ]
     }
 
-    es_client = ES.Elasticsearch([{
+    with ES.Elasticsearch([{
         'host': settings.ELASTICSEARCH_HOST,
         'port': settings.ELASTICSEARCH_PORT
-    }])
+    }]) as es_client:
 
-    search_res = es_client.search(
-        body=body,
-        index='movies',
-        params=params,
-        filter_path=['hits.hits._source']
-    )
-    es_client.close()
+        try:
+            search_res = es_client.search(
+                body=body,
+                index='movies',
+                params=params,
+                filter_path=['hits.hits._source']
+            )
 
-    if search_res:
-        return jsonify([doc['_source'] for doc in search_res['hits']['hits']])
+            if search_res:
+                return jsonify([doc['_source'] for doc in search_res['hits']['hits']])
+        except ES.ConnectionError:
+            print('No connection with ElasticSearch')
 
     return jsonify({})
 
 
 @app.route('/api/movies/<string:movie_id>')
 def get_movie(movie_id):
-    es_client = ES.Elasticsearch([{
+    with ES.Elasticsearch([{
         'host': settings.ELASTICSEARCH_HOST,
         'port': settings.ELASTICSEARCH_PORT
-    }])
+    }]) as es_client:
 
-    if not es_client.ping():
-        print('oh(')
-
-    search_result = es_client.get(index='movies', id=movie_id, ignore=404)
-
-    es_client.close()
-
-    if search_result['found']:
-        return jsonify(search_result['_source'])
+        try:
+            search_result = es_client.get(index='movies', id=movie_id, ignore=404)
+            if search_result['found']:
+                return jsonify(search_result['_source'])
+        except ES.ConnectionError:
+            print('No connection with ElasticSearch')
 
     return abort(404)
 
